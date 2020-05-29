@@ -1,6 +1,6 @@
 # By Huseyin Erozkan 101546770
 
-# # This script is used to connect to and interface with the DB
+# This script is used to connect to and interface with the DB
 import MySQLdb
 
 dbConn = MySQLdb.connect('db-iot-101546770-assignment2.cr5by9cixfkc.us-east-1.rds.amazonaws.com', 'webserver', '<password goes here>', 'assign2')

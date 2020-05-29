@@ -17,7 +17,7 @@ def main_page():
 @app.route('/devices/<arduino_name>/state', methods=['GET'])
 def get_device_history(arduino_name):
   result = db.get(arduino_name)
-  if (result is None):
+  if not (len(result) > 0):
     return "The specified device not exist in the database", 400
   else:
     return jsonify(result) # Return all the data stored for the specified arduino
@@ -47,7 +47,7 @@ def sensor_crud(arduino_name):
   # Get the requested Arduino's latest state as recorded in the database 
   elif (request.method == 'GET'):
     result = db.get_latest_state(arduino_name)
-    if (result is None):
+    if not (len(result) > 0):
       return "The specified device not exist in the database", 400
     else:
       return jsonify(result[0]) # Return the Arduino's current state
