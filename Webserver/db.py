@@ -1,3 +1,5 @@
+# By Huseyin Erozkan 101546770
+
 # # This script is used to connect to and interface with the DB
 import MySQLdb
 
