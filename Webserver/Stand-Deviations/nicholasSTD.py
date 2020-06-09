@@ -2,6 +2,7 @@ import numpy as np
 import requests
 from datetime import time
 import json
+import statistics
 
 arduino =  "Nicholas-Arduino"
 
@@ -23,10 +24,11 @@ if r.status_code == 200:
        temperature.append(data[3])
        light.append(data[4])
        date_time.append(data[5])
-            
-       stdHum = np.std(data[2])
-       stdTemp = np.std(data[3])
-       stdLight = np.std(data[4])
+
+
+       stdHum = statistics.pstdev(data[2])
+       stdTemp = statistics.pstdev(data[3])
+       stdLight = statistics.pstdev(data[4])
             
        print("the standard deviation for Humidity in Nicholas' office is: ", stdHum )
        print("the standard deviation for Temperature in Nicholas' office is: ",stdTemp)
