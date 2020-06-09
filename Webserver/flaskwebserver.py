@@ -41,7 +41,46 @@ def device_history_page(arduino_name):
   data = db.get(arduino_name)
   return render_template('devices.html', name=arduino_name, data=data)
 
+###################################################
+#
+# REST API
+# Data Visualisation 
+#
+###################################################
 
+@app.route('/devices/<arduino_name>/display', methods=['GET'])
+def chart(arduino_name):
+  arduino = "ryansArduino"
+  results = db.get(arduino_name)
+
+  # there are rows returned
+  if (len(results) > 0):
+
+      # TODO: MIGHT HAVE TO CHANGE THIS DEPENDING ON HOW THE DB DATA IS OBTAINED
+      # this works if data is in the form:
+      #   [ [88,"ryansArduino",62,18,218,"Wed, 03 Jun 2020 20:48:44 GMT",0], ... ]
+
+      humidity = []
+      temperature = []
+      light = []
+      date_time = []
+
+      # might need this if current method doesnt work...
+      # humidity = results['humidity']
+      # temperature = results['temperature']
+      # light = results['light']
+      # date_time = results['timestamp']
+
+
+      for row in results:
+          humidity.append(row[2]) # OR humidity.append(row['humidity'])
+          temperature.append(row[3])
+          light.append(row[4])
+          date_time.append(row[5])
+
+      return render_template('chart.html',arduino=arduino, humidity=humidity, temperature=temperature, light=light, labels=date_time)
+  else:
+      return "There was an error getting the arduino data :("
 
 ###################################################
 #

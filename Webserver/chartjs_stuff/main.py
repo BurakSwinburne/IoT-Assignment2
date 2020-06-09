@@ -14,7 +14,6 @@ def chart():
     # TODO: USE THE ROUTING TO SELECT WHAT ARDUINO WE USE
     arduino = "ryansArduino"
 
-# TODO: MAKE SURE THIS SECTION PULLS DATA CORRECTLY, MIGHT WANT IT TO DIRECTLY PULL FROM DB... UP TO YOU
     r = requests.get("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/" + arduino + "/state")
     print(r.status_code, r.reason)
 # ~~~~~~~~~~~~~~
