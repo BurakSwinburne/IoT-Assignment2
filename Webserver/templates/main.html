@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>IoT group assignment</title>
+</head>
+<body>
+    <h1>Welcome our IoT group Assignment</h1>
+    <h4>Please find below the temp, humitdity, light and voltage of two different locations being read by adrduino boards</h4>
+
+    <h4>If you'd like to look at the individual data locations in their JSON Format please click the links below</h4>
+
+    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/Nicholas-Arduino">Nicholas's office</a>
+    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/ryansArduino">Ryan's office</a>
+    
+    <h4>Configurable rules</h4>
+
+    <p>The current average temperature is: <b>{{sensor_avg_temp}}</b></p>
+    <p>Therefore, the heater's setting should be: <b>{{actuator_setting}}</b></p>
+    <p>To add or change some rules in the system, <a href="/app/rules">Click here</a></p>
+    
+<!--
+    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/Nicholas-Arduino/state">Nicholas's house</a>
+    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/ryansArduino/state">Ryan's house</a>
+    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/HuseyinsArduino/state"> Huseyin's house</a>
+-->
+</body>
+</html>

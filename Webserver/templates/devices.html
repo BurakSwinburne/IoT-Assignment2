@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+		<title>Office monitoring system</title>
+	</head>
+	<body>
+    <h1>All data for {{name}}</h1>
+    <p>To access data in JSON form: <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/{{name}}/state">Click here</a>
+
+    </p>
+		<table>
+		<tr>
+			<th>ID</th>
+			<th>Humidity</th>
+      <th>Temperature</th>
+      <th>Light</th>
+      <th>Timestamp</th>
+		<tr>
+
+		{% for row in data %}
+			<tr>
+				<td>{{row[0]}}</td>
+				<td>{{row[2]}}</td>
+        <td>{{row[3]}}</td>
+        <td>{{row[4]}}</td>
+        <td>{{row[5]}}</td>
+			</tr>
+		{% endfor %}
+		</table>
+    <a href="/">Back to home page</a>
+	</body>
+</html>
