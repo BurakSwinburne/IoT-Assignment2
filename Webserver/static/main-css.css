@@ -1,0 +1,13 @@
+body{
+    text-align: centre;
+}
+
+a:hover{
+    background-color: gainsboro;
+    text-decoration: underline;
+}
+
+a:link{
+    color: mediumblue;
+    text-decoration: none;
+}
