@@ -1,6 +1,7 @@
 import numpy as np
 import requests
 from datetime import time
+import json
 
 arduino = "ryansArduino"
 
@@ -11,6 +12,7 @@ print(r.status_code, r.reason)
 
 if r.status_code == 200:
    json_data = json.loads(r.text)
+   json_data
    humidity = []
    temperature = []
    light = []
@@ -27,9 +29,9 @@ if r.status_code == 200:
        stdTemp = np.std(data[3])
        stdLight = np.std(data[4])
             
-       print("the standard deviation for Humidity in ryan's office is: ", stdHum )
-       print("the standard deviation for Temperature in ryan's office is: ",stdtemp)
+       print("the standard deviation for Humidity in ryan's office is: ", stdHum)
+       print("the standard deviation for Temperature in ryan's office is: ", stdTemp)
        print("the standard deviation for Light in ryan's office is: ", stdLight)
 
-       r = requests.post("http://ec2-52-87-21-173.compute-1.amazonaws.com/analytics", data={'humidity': ststdHum, 'temperature': stdTemp, 'light': stdLight})
+       r = requests.post("http://ec2-52-87-21-173.compute-1.amazonaws.com/analytics", data={'humidity': stdHum, 'temperature': stdTemp, 'light': stdLight})
        print(r.status_code, r.reason)
