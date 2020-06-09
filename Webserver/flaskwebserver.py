@@ -2,8 +2,11 @@
 
 from flask import Flask, render_template, request, redirect
 from flask import jsonify
-
+import json
+import analytics # The analytics script
 import db # The db script
+import sensors as states # Script for CRUD operations for sensors and arduino states
+import datavisualisation as dataviz # Script for data visualisation
 
 app = Flask(__name__)
 
@@ -12,21 +15,19 @@ app = Flask(__name__)
 # Displayable pages
 #
 ###################
+
+# Main page. Display the approximate temperature and the current setting
+# that the actuator should be on depending on the rule's value
 @app.route('/')
 def main_page():
-  # Display what the average temperature is to the user, and then state what setting
-  # the heater should be on depending on the rule. Note that the returned value is a
-  # tuple, so get the 1st result (at index 0) and the temperature (at index 3)
-  temp1 = db.get_latest_state("ryansArduino")[0][3]
-  temp2 = db.get_latest_state("Nicholas-Arduino")[0][3]
-
-  avg_temperature = (temp1 + temp2) / 2
+  # Get approximate temperature of office
+  approx_temp = states.get_approximate_temperature()
 
   # Get the expected heater setting for the current temperature by getting the first returned
   # row and then the rule name
-  setting_result = db.get_setting_from_rule("heater", avg_temperature)[0][1]
+  setting_result = db.get_setting_from_rule("heater", approx_temp)[0][1]
   
-  return render_template('main.html', sensor_avg_temp=avg_temperature, actuator_setting=setting_result)
+  return render_template('main.html', sensor_avg_temp=approx_temp, actuator_setting=setting_result)
   
 
 # Create a UI displaying all the rules and allowing them to be configurable
@@ -35,52 +36,25 @@ def rules_page():
   data = db.get_all_rules()
   return render_template('rules.html', data=data)
 
+
 # Display the arduino's data in table form for the user
 @app.route('/app/devices/<arduino_name>')
 def device_history_page(arduino_name):
   data = db.get(arduino_name)
   return render_template('devices.html', name=arduino_name, data=data)
 
-###################################################
-#
-# REST API
-# Data Visualisation 
-#
-###################################################
 
+# Display the visualised data of a given device
 @app.route('/devices/<arduino_name>/display', methods=['GET'])
 def chart(arduino_name):
-  arduino = "ryansArduino"
-  results = db.get(arduino_name)
-
-  # there are rows returned
-  if (len(results) > 0):
-
-      # TODO: MIGHT HAVE TO CHANGE THIS DEPENDING ON HOW THE DB DATA IS OBTAINED
-      # this works if data is in the form:
-      #   [ [88,"ryansArduino",62,18,218,"Wed, 03 Jun 2020 20:48:44 GMT",0], ... ]
-
-      humidity = []
-      temperature = []
-      light = []
-      date_time = []
-
-      # might need this if current method doesnt work...
-      # humidity = results['humidity']
-      # temperature = results['temperature']
-      # light = results['light']
-      # date_time = results['timestamp']
+  return dataviz.display_chart_data(arduino_name)
 
 
-      for row in results:
-          humidity.append(row[2]) # OR humidity.append(row['humidity'])
-          temperature.append(row[3])
-          light.append(row[4])
-          date_time.append(row[5])
+# Display the analytics page
+@app.route('/analytics')
+def statistical_analysis(methods=['GET']):  
+  return render_template('analytics.html', data=analytics.get_analytics())
 
-      return render_template('chart.html',arduino=arduino, humidity=humidity, temperature=temperature, light=light, labels=date_time)
-  else:
-      return "There was an error getting the arduino data :("
 
 ###################################################
 #
@@ -88,6 +62,7 @@ def chart(arduino_name):
 # Routing for CRUD operations for the Arduino state
 #
 ###################################################
+
 
 # Get all the records regarding the Arduino's state, that are stored in the database
 # for the specified Arduino. Return all data in JSON form
@@ -100,22 +75,13 @@ def get_device_history(arduino_name):
     return jsonify(result) # Return all the data stored for the specified arduino
 
 
-# Routing used for the CRUD operations. 
-@app.route('/devices/<arduino_name>/state/', methods=['GET', 'POST', 'UPDATE', 'DELETE'])
-def sensor_crud(arduino_name):
+# Routing used for CREATE and READ operations
+@app.route('/devices/<arduino_name>/state/', methods=['GET', 'POST'])
+def create_or_get_state(arduino_name):
 
   # Add a new record regarding the current state of a specified Arduino
-  if (request.method == 'POST'):    
-    # Ensure that the client has sent all the valid data required
-    if not ('temperature' in request.values and 'light' in request.values and 'humidity' in request.values):
-      return "Invalid arguments received. Please pass in all sensors and their values as key-value pairs in the request.", 400
-
-    humidity = request.values.get('humidity')
-    temperature = request.values.get('temperature')
-    light = request.values.get('light')
-    
-    # If state successfully recorded
-    if (db.insert(arduino_name, humidity, temperature, light)):
+  if (request.method == 'POST'):
+    if (states.insert_new_state(arduino_name, request)):
       return "Arduino's state was recorded in the database", 200
     else:
       return "Error. Could not store data in database", 400
@@ -130,18 +96,34 @@ def sensor_crud(arduino_name):
       return jsonify(result[0]) # Return the Arduino's current state
 
 
-  # The client device wants to update a specific entry in the database
-  elif (request.method == 'UPDATE'):
-    return "ERROR"
+# Routing used for GET, PUT and DELETE operations. This route, unlike the previous, 
+# also includes an id as a variable
+@app.route('/devices/<arduino_name>/state/<state_id>', methods=['GET', 'PUT', 'DELETE'])
+def crud_by_id(arduino_name, state_id):
 
+  # Retrieve state by id
+  if (request.method == 'GET'):
+    result = db.get_state_by_id(state_id)
+
+    if (result):
+      return jsonify(result)
+    else:
+      return "Could not get record of state of given id", 400
+    
+
+  # The client device wants to update a specific entry in the database
+  if (request.method == 'PUT'):
+    result = states.update_state(arduino_name, state_id, request)
+    
+    if (result):
+      return "Record was successfully updated", 200
+    else:
+      return "Error, could not update record", 400
   
 
-  # The client device wants to delete an entry in the database
-  # Note that this won't actually delete the entry. Instead, the database is designed
-  # such that each entry has an 'archive' boolean value that's false by default, 
-  # which will be flipped to true.
+  # Delete a record of arduino's state from the DB
   elif (request.method == 'DELETE'):
-    if (db.delete(arduino_name, None)):
+    if (db.delete(arduino_name, state_id)):
       return "Record was deleted from the database", 200
     else:
       return "Error. Could not remove record from database", 400
@@ -158,8 +140,7 @@ def sensor_crud(arduino_name):
 @app.route('/rules/', methods=['POST', 'GET'])
 def rule_add_or_get():
 
-  # Add a new rule to the list of configurable rules
-  # This will just be a name, and a threshold value
+  # Add a new rule to the list of configurable rules. This will just be a name, and a threshold value
   if (request.method == "POST"):
     if not ('rulename' in request.values and 'ruledesc' in request.values and 'minval' in request.values and 'maxval' in request.values):
       return "Invalid arguments received. Please add a rulename, ruledesc and thresholdvalue as key-value pairs in the request.", 400  
@@ -186,7 +167,7 @@ def rule_add_or_get():
 @app.route('/rules/<id>', methods=['GET', 'UPDATE', 'DELETE'])
 def rule_crud(id):
 
-  # Get rule with current id
+  # Get details of rule with current id
   if (request.method == "GET"):
     result = db.get_rule(id)
     if not (len(result) > 0):
@@ -194,7 +175,7 @@ def rule_crud(id):
     else:
       return jsonify(result[0])
 
-  # Update a rule's name or threshold value
+  # Update a rule of given id
   if (request.method == "UPDATE"):
     if not ('rulename' in request.values and 'ruledesc' and 'minval' in request.values and 'maxval' in request.values):
       return "Invalid arguments received. Please add a rulename and thresholdvalue as key-value pairs in the request.", 400
@@ -222,11 +203,30 @@ def rule_crud(id):
       return "Could not delete rule from db", 400
 
 
+# Get what 'mode' the actuator arduino should be in, depending on the set or category of rules
+# the rulename passed in should be a string formatted as so: '<rulename>:', so for exampled: 'heater:'
+# This is used so that the actuator Pi can retrieve the configurable threshold values from the server
+@app.route('/rules/<rulename>/mode/', methods=['GET'])
+def get_mode_from_rule(rulename):
+
+  # NOTE: Currently only rules for the heater are implmented
+  if (rulename == "heater:"):
+    # Get avg temperature to see what setting the heater should be in, depending
+    # on the min temperature and max temperature values in the database
+    temp1 = db.get_latest_state("ryansArduino")[0][3]
+    temp2 = db.get_latest_state("Nicholas-Arduino")[0][3]
+    avg_temperature = (temp1 + temp2) / 2
+
+    setting_result = db.get_setting_from_rule(rulename, avg_temperature)[0]
+    
+    return jsonify(setting_result)
+
+  return "Rulename not recognised", 400
 
 ####################################################################################
 #
 # Routing for CRUD operations, SPECIFICALLY built to allow the website to perform 
-# UPDATE and DELETE operations, since browsers and forms don't support those methods
+# PUT and DELETE operations, since browsers and forms don't support those methods
 #
 ####################################################################################
 

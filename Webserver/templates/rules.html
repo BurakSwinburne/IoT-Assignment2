@@ -2,34 +2,35 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-		<title>Office monitoring system</title>
+    <title>Office monitoring system</title>
+    <link rel="stylesheet" href="/static/main-css.css" />
 	</head>
 	<body>
     <h1>Configurable rules</h1>
     <p>To access data in JSON form: <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/rules/">Click here</a></p>
     
-    <form action="/processform" method="POST" style="border: 1px solid grey; padding: 16px; margin-bottom: 48px;">
+    <form action="/processform" method="POST" class="div--border">
       <p>Configure rules below by changing their name or value</p>
     {% for row in data %}
-        <div style="border: 1px solid grey; padding: 16px; margin-bottom: 16px;">
-          <b style="margin-bottom: 8px;">Rule id: {{row[0]}}</b>
+        <div class="div--border">
+          <h3 class="rule--id">Rule id: {{row[0]}}</h3>
           <input type="hidden" name="id[]" value="{{row[0]}}" required="required" />
+          
+          <p class="input--label">Rule name:</p>
+          <input type="text" name="rulename[]" value="{{row[1]}}" required="required" />
+          <p class="input--label">Rule description: (Max 255 chars)</p>
+          <textarea name="ruledesc[]" required="required">{{row[2]}}</textarea>
+          
+          <div style="max-width: 300px; display: inline-block; margin-right: 16px;">
+            Minimum value:
+            <input type="text" name="minval[]" value="{{row[3]}}" required="required" />
+          </div>
+          <div style="max-width: 300px; display: inline-block; margin-right: 16px;">
+            Maximum value:
+            <input type="text" name="maximumval[]" value="{{row[4]}}" required="required" />
+          </div>
+          
           <br />
-          Rule name:
-          <br />
-          <input type="text" name="rulename[]" value="{{row[1]}}" style="margin-bottom: 8px;" required="required" />
-          <br />
-          Rule description: (Max 255 chars)
-          <br />
-          <textarea name="ruledesc[]" style="margin-bottom: 8px; width: 500px; height: 100px;" required="required">{{row[2]}}</textarea>
-          <br />
-          Minimum value:
-          <br />
-          <input type="text" name="minval[]" value="{{row[3]}}" style="margin-bottom: 16px;" required="required" />
-          <br />
-          Maximum value:
-          <br />
-          <input type="text" name="maximumval[]" value="{{row[4]}}" style="margin-bottom: 16px;" required="required" />
           <br />
           <a href="/deleterule/{{row[0]}}" style="color: white; background-color: #ff3c3c; text-decoration: none; padding: 8px;" role="button">Delete rule</a>
           <a href="/rules/{{row[0]}}">Get data in JSON form</a>
@@ -39,21 +40,14 @@
     </form>
 
     <h1>Add rule</h1>
-    <form action="/rules/" method="POST" style="border: 1px solid grey; padding: 16px;">
-      Rule name:
-      <br />
-      <input type="text" name="rulename" style="margin-bottom: 8px;" required="required" />
-      <br />
-      Rule description: (Max 255 chars)
-      <br />
-      <textarea name="ruledesc" style="margin-bottom: 8px; width: 500px; height: 100px;" required="required"></textarea>
-      <br />
-      Minimum value:
-      <br />
+    <form action="/rules/" method="POST" class="div--border">
+      <p class="input--label">Rule name:</p>
+      <input type="text" name="rulename" required="required" />
+      <p class="input--label">Rule description: (Max 255 chars)</p>
+      <textarea name="ruledesc" required="required"></textarea>
+      <p class="input--label" style="display: inline-block;">Minimum value:</p>
       <input type="text" name="minval" style="margin-bottom: 8px;" required="required" />
-      <br />
-      Maximum value:
-      <br />
+      <p class="input--label" style="display: inline-block;">Maximum value:</p>
       <input type="text" name="maxval" style="margin-bottom: 8px;" required="required" />
       <br />
       <input type="submit" value="Add rule">

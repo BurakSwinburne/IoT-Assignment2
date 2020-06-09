@@ -2,8 +2,9 @@
 
 # This script is used to connect to and interface with the DB
 import MySQLdb
-
-dbConn = MySQLdb.connect('db-iot-101546770-assignment2.cr5by9cixfkc.us-east-1.rds.amazonaws.com', 'webserver', '<password here>', 'assign2')
+from config import DB_PASSWORD # import the db password via the config.py file - to prevent leaking the password again
+ 
+dbConn = MySQLdb.connect('db-iot-101546770-assignment2.cr5by9cixfkc.us-east-1.rds.amazonaws.com', 'webserver', DB_PASSWORD, 'assign2')
 
 # First set the session time zone, since the mysql db's global time zone cannot be changed, due to lack of SUPER priveleges
 with dbConn:
@@ -13,9 +14,7 @@ with dbConn:
   cursor.close()
 
 
-
-# Insert a new record into the database
-# Return True if DB insertion work, otherwise False
+# Insert a new record into the database. Return True if DB insertion work, otherwise False
 def insert(arduino_name, humidity, temperature, light):
   
   try:
@@ -54,6 +53,24 @@ def get(arduino_name):
     cursor.close()
 
 
+# Get the state via id. Return none if a record of the given id isn't found
+def get_state_by_id(id):
+  try:
+    with dbConn:
+      cursor = dbConn.cursor()
+      cursor.execute("""
+        SELECT * FROM state
+        WHERE id = %s
+        """, [id])
+      dbConn.commit()
+      result = cursor.fetchall()
+      return result
+  except MySQLdb.IntegrityError:
+    return None
+  finally: # This will always run, even if there is a return statement in the try/catch block
+    cursor.close()
+
+
 
 # Get the latest state of a specified Arduino.
 # Return the state if the arduino of specified name exists, otherwise return none
@@ -76,12 +93,23 @@ def get_latest_state(arduino_name):
     cursor.close()
 
 
+def update_state(humidity, temperature, light, id):
+  #return id
 
-# Get all records of a specific sensor from a specified Arduino
-def get_sensor(arduino_name, sensor):
-  return "get"
-
-
+  try:
+    with dbConn:
+      cursor = dbConn.cursor()
+      cursor.execute("""
+        UPDATE state
+        SET humidity = %s, temperature = %s, light = %s
+        WHERE id = %s;
+        """, [humidity, temperature, light, id])
+      dbConn.commit()
+      return cursor.rowcount == 1
+  except MySQLdb.IntegrityError:
+    return False
+  finally: # This will always run, even if there is a return statement in the try/catch block
+    cursor.close()
 
 # Delete a record of an Arduino state. Note that this doesn't actually delete the record,
 # but rather sets the record's archive value to true, meaning that SELECT and UPDATE
@@ -90,29 +118,13 @@ def delete(arduino_name, id):
   try:
     with dbConn:
       cursor = dbConn.cursor()
-
-      # If no id was specified, archive the latest entry that isn't already archived
-      if (id is none):
-        affected_count = cursor.execute("""
-          UPDATE assign2 SET archive = 1
-          WHERE archive = 0 AND arduinoName = %s
-          ORDER BY id DESC
-          LIMIT 1;
-          """, [arduino_name])
-        dbConn.commit()
-        return affected_count == 1
-      
-      # Id was specified, so update that particular entry
-      else:
-        affected_count = cursor.execute("""
-          UPDATE assign2 SET archive = 1
-          WHERE archive = 0 AND arduinoName = %s AND id = $s
-          ORDER BY id DESC
-          LIMIT 1;
-          """, [arduino_name, id])
-        dbConn.commit()
-        return affected_count == 1
-
+      cursor.execute("""
+        UPDATE state 
+        SET archive = 1
+        WHERE archive = 0 AND arduinoName = %s AND id = %s
+        """, [arduino_name, id])
+      dbConn.commit()
+      return cursor.rowcount == 1
   except MySQLdb.IntegrityError:
     return false
   finally: # This will always run, even if there is a return statement in the try/catch block
@@ -201,7 +213,7 @@ def delete_rule(id):
         UPDATE rules
         SET archive = 1
         WHERE id = %s;
-        """, id)
+        """, [id])
       dbConn.commit()
       return True
   except MySQLdb.IntegrityError:

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>IoT group assignment - Analytics</title>
+    <link rel="stylesheet" href="/static/main-css.css" />
+</head>
+<body>
+    <h1>Analytics for sensor Arduinos</h1>
+    <p>Shown below are the statistics for each sensor and Arduino</p>
+
+    {% for device in data %}
+    <div class="div--border">
+      <h2>Analytics data for {{ device['arduino_name'] }}</h2>
+      <h3>Standard deviations</h3>
+      <table>
+        <tr>
+          <th>Sensor</th>
+          <th>std</th>
+        </tr>
+        <tr>
+          <td>Light</td>
+          <td>{{ device['std']['light'] }}</td>
+        </tr>
+        <tr>
+          <td>Humidity</td>
+          <td>{{ device['std']['humidity'] }}</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>{{ device['std']['temp'] }}</td>
+        </tr>
+      </table>
+      <br />
+      <h3>Means</h3>
+      <table>
+        <tr>
+          <th>Sensor</th>
+          <th>Mean</th>
+        </tr>
+        <tr>
+          <td>Light</td>
+          <td>{{ device['mean']['light'] }}</td>
+        </tr>
+        <tr>
+          <td>Humidity</td>
+          <td>{{ device['mean']['humidity'] }}</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>{{ device['mean']['temp'] }}</td>
+        </tr>
+      </table>
+      <br />
+      <h3>Variances</h3>
+      <table>
+        <tr>
+          <th>Sensor</th>
+          <th>Variance</th>
+        </tr>
+        <tr>
+          <td>Light</td>
+          <td>{{ device['variance']['light'] }}</td>
+        </tr>
+        <tr>
+          <td>Humidity</td>
+          <td>{{ device['variance']['humidity'] }}</td>
+        </tr>
+        <tr>
+          <td>Temperature</td>
+          <td>{{ device['variance']['temp'] }}</td>
+        </tr>
+      </table>
+    </div>
+    {% endfor %}
+    <a href="/" role="button">Back to home page</a>
+</body>
+</html>

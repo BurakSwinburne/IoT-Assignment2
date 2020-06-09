@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+	<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+	<link rel="stylesheet" href="/static/main-css.css" />
 <head>
     <meta charset="utf-8" />
 		<title>Office monitoring system</title>
 	</head>
 	<body>
     <h1>All data for {{name}}</h1>
-    <p>To access data in JSON form: <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/{{name}}/state">Click here</a>
-
+    <p>To access data in JSON form: <a href="/devices/{{name}}/state">Click here</a>
+		<p>For visualised data: <a href="/devices/{{name}}/display">Click here</a></p>
     </p>
 		<table>
 		<tr>

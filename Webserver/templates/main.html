@@ -3,26 +3,32 @@
 <head>
     <meta charset="utf-8" />
     <title>IoT group assignment</title>
+    <link rel="stylesheet" href="/static/main-css.css" />
 </head>
 <body>
-    <h1>Welcome our IoT group Assignment</h1>
-    <h4>Please find below the temp, humitdity, light and voltage of two different locations being read by adrduino boards</h4>
+    <h1>Welcome to our IoT group Assignment</h1>
+    <p>This is the web page and interface for our IoT system. </p>
 
-    <h4>If you'd like to look at the individual data locations in their JSON Format please click the links below</h4>
+    <div class="div--border">
+        <h4>Arduino data</h4>
+        <p>There are 2 Arduinos with sensors in the system. They are used to sense the environmental conditions of the environment of the team member's workstation</p>
+        
+        <p>If you'd like to look at the individual data please click the links below</P>
 
-    <p><a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/Nicholas-Arduino">Nicholas's office</a></p>
-    <p><a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/ryansArduino">Ryan's office</a></p>
+        <p><a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/Nicholas-Arduino">Nicholas's workstation</a></p>
+        <p><a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/app/devices/ryansArduino">Ryan's workstation</a></p>        
+    </div>
+    <div class="div--border">
+        <h4>Statistics</h4>
+        <p>To see the calculated standard deviation, mean and variances, <a href="/analytics">Click here</a></p>        
+    </div>    
+    <div class="div--border">
+        <h4>Configurable rules</h4>
+
+        <p>The current approximate temperature of the office is: <b>{{sensor_avg_temp}}</b></p>
+        <p>Therefore, the heater's setting should be: <b>{{actuator_setting}}</b></p>
+        <p>To add or change some rules in the system, <a href="/app/rules">Click here</a></p>    
+    </div>
     
-    <h4>Configurable rules</h4>
-
-    <p>The current average temperature is: <b>{{sensor_avg_temp}}</b></p>
-    <p>Therefore, the heater's setting should be: <b>{{actuator_setting}}</b></p>
-    <p>To add or change some rules in the system, <a href="/app/rules">Click here</a></p>
-    
-<!--
-    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/Nicholas-Arduino/state">Nicholas's house</a>
-    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/ryansArduino/state">Ryan's house</a>
-    <a href="http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/HuseyinsArduino/state"> Huseyin's house</a>
--->
 </body>
 </html>
