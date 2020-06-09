@@ -3,7 +3,7 @@
 # This script is used to connect to and interface with the DB
 import MySQLdb
 
-dbConn = MySQLdb.connect('db-iot-101546770-assignment2.cr5by9cixfkc.us-east-1.rds.amazonaws.com', 'webserver', 'JEq7cJdU&E8*D%BS', 'assign2')
+dbConn = MySQLdb.connect('db-iot-101546770-assignment2.cr5by9cixfkc.us-east-1.rds.amazonaws.com', 'webserver', '<password here>', 'assign2')
 
 # First set the session time zone, since the mysql db's global time zone cannot be changed, due to lack of SUPER priveleges
 with dbConn:
