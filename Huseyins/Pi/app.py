@@ -12,37 +12,16 @@ ser = serial.Serial()
 ser.port = "/dev/ttyACM0"
 ser.baudrate = 115200
 ser.open()
-    
-# Retrieve all data for a given Arduino
-def retrieve_data(arduinoName):
-    if (arduinoName == "huseyin"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/HuseyinsArduino/state")
-        data = json.loads(response.read())    
-        return data
-    elif (arduinoName == "nicholas"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/Nicholas-Arduino/state")
-        data = json.loads(response.read())
-        return data
-    elif (arduinoName == "ryan"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/ryansArduino/state")
-        data = json.loads(response.read())
-        return data
-    else:
-        print("unrecognised arduino name")
+
 
 # Retrieve the given Arduino's current state
 def retrieve_latest_data(arduinoName):
-    if (arduinoName == "huseyin"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/HuseyinsArduino/state/")
+    if (arduinoName == "HuseyinsArduino" \
+        or arduinoName == "Nicholas-Arduino" \
+            or arduinoName == "ryansArduino"):
+
+        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/" + arduinoName + "/state/")
         data = json.loads(response.read())    
-        return data
-    elif (arduinoName == "nicholas"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/Nicholas-Arduino/state/")
-        data = json.loads(response.read())
-        return data
-    elif (arduinoName == "ryan"):
-        response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/ryansArduino/state/")
-        data = json.loads(response.read())
         return data
     else:
         print("unrecognised arduino name")
@@ -50,8 +29,8 @@ def retrieve_latest_data(arduinoName):
 
 # This function runs routinely, to gather data from the MySQL DB
 def routine_job():
-    ryansData = retrieve_latest_data("ryan")
-    nicholasData = retrieve_latest_data("nicholas")
+    ryansData = retrieve_latest_data("ryansArduino")
+    nicholasData = retrieve_latest_data("Nicholas-Arduino")
     print(ryansData)
     print(nicholasData)
     
@@ -73,7 +52,7 @@ def routine_job():
     setting = str(json.loads(response.read())[1])
     
     print(setting)
-    ser.write(setting)
+    ser.write(setting) # Tell the Arduino what setting the heater should be on
             
         
 # Schedule a function to run every so often
