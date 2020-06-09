@@ -11,3 +11,8 @@ a:link{
     color: mediumblue;
     text-decoration: none;
 }
+
+a:visited{
+    color: mediumturquoise;
+    text-decoration: none;
+}
