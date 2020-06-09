@@ -31,9 +31,8 @@ def retrieve_latest_data(arduinoName):
 def routine_job():
     ryansData = retrieve_latest_data("ryansArduino")
     nicholasData = retrieve_latest_data("Nicholas-Arduino")
-    print(ryansData)
-    print(nicholasData)
     
+    # NOTE: below avg temp calculation is for debugging purposes only
     #[0]: record id
     #[1]: arduino name
     #[2]: Humidity
@@ -43,11 +42,10 @@ def routine_job():
     #[6]: Whether it's been archived or not
     
     avgTemp = (ryansData[3] + nicholasData[3]) / 2
-    print("Average temp right now is:")
+    print("Approximate temp right now is:")
     print(avgTemp)
     
-    # Get the setting that the heater should be on from the
-    # web server
+    # Get the setting that the heater should be on from the web server
     response = urllib2.urlopen("http://ec2-52-87-21-173.compute-1.amazonaws.com/rules/heater:/mode/")
     setting = str(json.loads(response.read())[1])
     
