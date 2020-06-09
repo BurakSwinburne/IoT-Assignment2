@@ -1,112 +1,112 @@
 <head>
     <meta charset="utf-8" />
-    <title>Data Visualisation</title>
+    <title>Chart.js Example</title>
     <!-- import plugin script -->
-    <script src='static/Chart.min.js'></script>
+    <script src='/static/Chart.min.js'></script>
+    <link rel="stylesheet" href="/static/main-css.css" />
 </head>
-
-
-<h1>Sensor results for {{arduino}}</h1>
-<!-- bar chart canvas element -->
-<canvas id="humidityChart" width="600" height="300"></canvas>
-<canvas id="temperatureChart" width="600" height="300"></canvas>
-<canvas id="lightChart" width="600" height="300"></canvas>
-<p id="caption">The chart is displaying a simple line chart.</p>
-
-
-<script>
-var ctx = document.getElementById('humidityChart');
-var humidityChart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-        labels: {{labels|tojson}},
-        datasets: [{
-            label: "Humidity",
-            data: {{humidity|tojson}},
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-        }]
-    },
-    options: {
-        scales: {
-            xAxes: [{
+<body>
+    <h1>Sensor results for {{arduino}}</h1>
+    <!-- bar chart canvas element -->
+    <canvas id="humidityChart" width="600" height="300"></canvas>
+    <canvas id="temperatureChart" width="600" height="300"></canvas>
+    <canvas id="lightChart" width="600" height="300"></canvas>
+    <p id="caption">The chart is displaying a simple line chart.</p>
+    <a href="/">Back to home page</a>
+    <script>
+    var ctx = document.getElementById('humidityChart');
+    var humidityChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: {{labels|tojson}},
+            datasets: [{
+                label: "Humidity",
+                data: {{humidity|tojson}},
+                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                xAxes: [{
+                        ticks: {
+                            maxRotation: 90,
+                            minRotation: 90
+                        }
+                    }],
+                yAxes: [{
                     ticks: {
-                        maxRotation: 90,
-                        minRotation: 90
+                        beginAtZero: false
                     }
-                }],
-            yAxes: [{
-                ticks: {
-                    beginAtZero: false
+                }]
+            }
+        }
+    });
+    </script>
+
+    <script>
+        var ctx = document.getElementById('temperatureChart');
+        var temperatureChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{labels|tojson}},
+                datasets: [{
+                    label: "Temperature",
+                    data: {{temperature|tojson}},
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            maxRotation: 90,
+                            minRotation: 90
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
                 }
-            }]
-        }
-    }
-});
-</script>
-
-<script>
-    var ctx = document.getElementById('temperatureChart');
-    var temperatureChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{labels|tojson}},
-            datasets: [{
-                label: "Temperature",
-                data: {{temperature|tojson}},
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        maxRotation: 90,
-                        minRotation: 90
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
-                }]
             }
-        }
-    });
-</script>
+        });
+    </script>
 
-<script>
-    var ctx = document.getElementById('lightChart');
-    var lightChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{labels|tojson}},
-            datasets: [{
-                label: "Light",
-                data: {{light|tojson}},
-                backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                borderColor: 'rgba(255, 206, 86, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            scales: {
-                xAxes: [{
-                    ticks: {
-                        maxRotation: 90,
-                        minRotation: 90
-                    }
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: false
-                    }
+    <script>
+        var ctx = document.getElementById('lightChart');
+        var lightChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{labels|tojson}},
+                datasets: [{
+                    label: "Light",
+                    data: {{light|tojson}},
+                    backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                    borderColor: 'rgba(255, 206, 86, 1)',
+                    borderWidth: 1
                 }]
+            },
+            options: {
+                scales: {
+                    xAxes: [{
+                        ticks: {
+                            maxRotation: 90,
+                            minRotation: 90
+                        }
+                    }],
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
+                }
             }
-        }
-    });
-</script>
+        });
+    </script>
 
+</body>
