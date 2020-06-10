@@ -2,7 +2,6 @@ import serial
 import MySQLdb as mdb
 import time
 from datetime import datetime
-import requests
 
 
 
@@ -11,7 +10,6 @@ device = "/dev/ttyACM0"
 
 
 arduino = serial.Serial(device,9600)
-arduinoName = "Nicholas-Arduino"
 
 Now= datetime.now()
 current = Now.strftime("%H%M%S")
@@ -48,10 +46,15 @@ print(intLight)
 print(temperature)
 
 
+
+
 print("Time is " + current)
 
-r = requests.post("http://ec2-52-87-21-173.compute-1.amazonaws.com/devices/Nicholas-Arduino/state", data={'humidity': intHum, 'temperature': intTemp, 'light': intLight})
-print(r.status_code, r.reason)
+
+conn = mdb.connect('localhost', 'root', 'root', 'assingment3DB') or die("Couldnt connect to db") ;
 
 
-
+cursor = conn.cursor()
+cursor.execute("""INSERT INTO log VALUES(NULL,%s,%s,%s,%s)""" % (current,intLight,intTemp,intHum))
+conn.commit()
+cursor.close()
