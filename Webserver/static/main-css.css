@@ -1,6 +1,12 @@
 body{
     text-align: centre;
     font-family: Arial, Helvetica, sans-serif;
+    margin: 32px auto;
+    max-width: 900px;
+    width: auto;
+    padding: 32px;
+    border: 1px solid rgb(223, 223, 223);
+    box-shadow: 1px 1px 10px 1px rgb(0, 0, 0, 0.08); 
 }
 
 a:hover{
